@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Programmer;
+use AppBundle\Form\ProgrammerType;
 
 class ProgrammerController extends BaseController
 {
@@ -19,8 +20,10 @@ class ProgrammerController extends BaseController
 	{
 
 		$data = json_decode($request->getContent(), true);
-		$programmer = new Programmer($data['nickname'], $data['avatarNumber']);
-		$programmer->setTagLine($data['tagLine']);
+		
+		$programmer = new Programmer();
+		$form = $this->createForm(new ProgrammerType(), $programmer);
+		$form->submit($data);
 		$programmer->setUser($this->findUserByUsername('weaverryan'));
 
 		$em = $this->getDoctrine()->getManager();

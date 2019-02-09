@@ -23,6 +23,8 @@ $client = new \GuzzleHttp\Client([
 ]);
 
 
+
+// 1) Create a programmer resource
 $nickname = 'ObjectOrienter'.rand(0, 999);
 $data = array(
 	'nickname' => $nickname,
@@ -33,6 +35,11 @@ $data = array(
 $response = $client->post('/api/programmers', [
 	'body' => json_encode($data)
 ]);
+
+
+
+// 2) GET a programmer resource
+$response = $client->get('/api/programmers/'.$nickname);
 
 echo $response;
 echo "\n\n";

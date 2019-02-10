@@ -5,6 +5,7 @@ namespace AppBundle\Controller\Api;
 use AppBundle\Controller\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Programmer;
@@ -31,7 +32,7 @@ class ProgrammerController extends BaseController
 		$em->flush();
 
 		$data = $this->serializeProgrammer($programmer);
-		$response = new Response(json_encode($data), 201);
+		$response = new JsonResponse($data, 201);
 		$response->headers->set('Content-Type', 'application/json');
 
 		$programmerUrl = $this->generateUrl(
@@ -62,7 +63,7 @@ class ProgrammerController extends BaseController
 
 		$data = $this->serializeProgrammer($programmer);
 
-		$response = new Response(json_encode($data), 200);
+		$response = new JsonResponse($data, 200);
 		$response->headers->set('Content-Type', 'application/json');
 
 		return $response;
@@ -84,7 +85,7 @@ class ProgrammerController extends BaseController
 			$data['programmers'][] = $this->serializeProgrammer($programmer);
 		}
 	
-		$response = new Response(json_encode($data), 200);
+		$response = new JsonResponse($data, 200);
 		$response->headers->set('Content-Type', 'application/json');
 		return $response;
 	}

@@ -2,13 +2,15 @@
 namespace AppBundle\Tests\Controller\Api;
 
 use AppBundle\Test\ApiTestCase;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use AppBundle\Entity\Programmer;
 
 class ProgrammerControllerTest extends ApiTestCase
 {
 	protected function setUp()
     {
     	parent::setUp();
-    	
+
         $this->createUser('weaverryan');
     }
 
@@ -32,4 +34,43 @@ class ProgrammerControllerTest extends ApiTestCase
 		$this->assertArrayHasKey('nickname', $finishedData);
 		$this->assertEquals('ObjectOrienter', $finishedData['nickname']);
 	}
+
+	public function testGETProgrammer()
+	{
+		$this->createProgrammer(array(
+			'nickname' => 'UnitTester',
+			'avatarNumber' => 3,
+		));
+
+		$response = $this->client->get('/api/programmers/UnitTester');
+		$this->assertEquals(200, $response->getStatusCode());
+		$data = $response->json();
+		$this->assertEquals(array(
+			'nickname',
+			'avatarNumber',
+			'powerLevel',
+			'tagLine'
+		), array_keys($data));
+	}
+
+	protected function createProgrammer(array $data)
+	{
+		$data = array_merge(array(
+					'powerLevel' => rand(0, 10),
+					'user' => $this->getEntityManager()
+						->getRepository('AppBundle:User')
+						->findAny()
+					), $data);
+
+		$accessor = PropertyAccess::createPropertyAccessor();
+		$programmer = new Programmer();
+		foreach ($data as $key => $value) {
+			$accessor->setValue($programmer, $key, $value);
+		}
+
+		$this->getEntityManager()->persist($programmer);
+		$this->getEntityManager()->flush();
+		return $programmer;
+	}
+
 }

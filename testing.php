@@ -38,6 +38,10 @@ $response = $client->post('/api/programmers', [
 
 $programmerUrl = $response->getHeader('Location');
 
+echo $response;
+echo "\n\n";
+
+
 // 2) GET a programmer resource
 $response = $client->get($programmerUrl);
 

@@ -30,18 +30,20 @@ class ProgrammerController extends BaseController
 		$em->persist($programmer);
 		$em->flush();
 
-		$response = new Response('It worked. Believe me - I\'m an API', 201);
+		$data = $this->serializeProgrammer($programmer);
+		$response = new Response(json_encode($data), 201);
+		$response->headers->set('Content-Type', 'application/json');
+
 		$programmerUrl = $this->generateUrl(
 			'api_programmers_show',
 			['nickname' => $programmer->getNickname()]
 		);
 		$response->headers->set('Location', $programmerUrl);
-
 		return $response;
 	}
 
 
-	/**
+   /**
 	* @Route("/api/programmers/{nickname}", name="api_programmers_show")
 	* @Method("GET")
 	*/
@@ -58,16 +60,43 @@ class ProgrammerController extends BaseController
 			));
 		}
 
-		$data = array(
-			'nickname' => $programmer->getNickname(),
-			'avatarNumber' => $programmer->getAvatarNumber(),
-			'powerLevel' => $programmer->getPowerLevel(),
-			'tagLine' => $programmer->getTagLine(),
-		);
+		$data = $this->serializeProgrammer($programmer);
 
 		$response = new Response(json_encode($data), 200);
 		$response->headers->set('Content-Type', 'application/json');
 
 		return $response;
 	}
+
+   /**
+	* @Route("/api/programmers")
+	* @Method("GET")
+	*/
+	public function listAction($nickname)
+	{
+		$programmers = $this->getDoctrine()
+			->getRepository('AppBundle:Programmer')
+			->findAll();
+
+		$data = array('programmers' => array());
+
+		foreach ($programmers as $programmer) {
+			$data['programmers'][] = $this->serializeProgrammer($programmer);
+		}
+	
+		$response = new Response(json_encode($data), 200);
+		$response->headers->set('Content-Type', 'application/json');
+		return $response;
+	}
+
+	private function serializeProgrammer(Programmer $programmer)
+	{
+		return array(
+			'nickname' => $programmer->getNickname(),
+			'avatarNumber' => $programmer->getAvatarNumber(),
+			'powerLevel' => $programmer->getPowerLevel(),
+			'tagLine' => $programmer->getTagLine(),
+		);
+	}
+
 }

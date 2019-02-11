@@ -13,6 +13,7 @@ use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\DomCrawler\Crawler;
 use AppBundle\Entity\User;
+use AppBundle\Test\ResponseAsserter;
 
 class ApiTestCase extends KernelTestCase
 {
@@ -32,6 +33,11 @@ class ApiTestCase extends KernelTestCase
      * @var ConsoleOutput
      */     
     private $output;
+
+    /**
+     * @var ResponseAsserter
+     */
+    private $responseAsserter;
 
     /**
      * @var FormatterHelper
@@ -244,5 +250,16 @@ class ApiTestCase extends KernelTestCase
     protected function getEntityManager()
     {
         return $this->getService('doctrine.orm.entity_manager');
+    }
+
+   /**
+    * @return ResponseAsserter
+    */
+    protected function asserter()
+    {
+        if ($this->responseAsserter === null) {
+            $this->responseAsserter = new ResponseAsserter();
+        }
+        return $this->responseAsserter;
     }
 }

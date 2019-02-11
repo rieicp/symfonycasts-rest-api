@@ -73,7 +73,7 @@ class ProgrammerController extends BaseController
 	* @Route("/api/programmers")
 	* @Method("GET")
 	*/
-	public function listAction($nickname)
+	public function listAction()
 	{
 		$programmers = $this->getDoctrine()
 			->getRepository('AppBundle:Programmer')

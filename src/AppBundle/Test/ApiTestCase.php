@@ -14,6 +14,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\DomCrawler\Crawler;
 use AppBundle\Entity\User;
 use AppBundle\Test\ResponseAsserter;
+use GuzzleHttp\Event\BeforeEvent;
 
 class ApiTestCase extends KernelTestCase
 {
@@ -56,8 +57,13 @@ class ApiTestCase extends KernelTestCase
             // 'http_errors' => false
         ]);
         self::$history = new History();
-        self::$staticClient->getEmitter()
-            ->attach(self::$history);
+            self::$staticClient->getEmitter()
+            ->on('before', function(BeforeEvent $event) {
+                $path = $event->getRequest()->getPath();
+                if (strpos($path, '/api') === 0) {
+                    $event->getRequest()->setPath('/app_test.php'.$path);
+                }
+            });
 
         self::bootKernel();
     }
